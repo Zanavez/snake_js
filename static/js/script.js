@@ -20,15 +20,15 @@ const snake = {
 let apple = null;
 
 // firefox image load fix
-await Promise.all(
-    Object.values(images).map(img => new Promise(resolve => {
-        const listner = () => {
-            resolve();
-            img.removeEventListener("load", listner);
-        };
-        img.addEventListener("load", listner);
-    }))
-);
+// await Promise.all(
+//     Object.values(images).map(img => new Promise(resolve => {
+//         const listner = () => {
+//             resolve();
+//             img.removeEventListener("load", listner);
+//         };
+//         img.addEventListener("load", listner);
+//     }))
+// );
 
 for (let x = 0; x < mapWidth; x++) {
     map.push([]);
@@ -90,7 +90,9 @@ function loop() {
         stopGame(false);
     }
 
-
+    if (map[snake.x][snake.y]) {
+        stopGame(false);
+    }
 // отрисовка
 
     context.clearRect(0, 0, canvas.width, canvas.height);
@@ -99,6 +101,8 @@ function loop() {
     context.rect(0, 0, canvas.width, canvas.height);
     context.fill();
 
+
+    // отрисовка стен
     for (let x = 0; x < mapWidth; x++) {
         for (let y = 0; y < mapHeight; y++) {
             if (map[x][y]) {
@@ -113,6 +117,7 @@ function loop() {
         }
     }
 
+    // отрисовка сегментов змеи
     context.fillStyle = "#555";
     context.strokeStyle = "#ffffff";
     for (const sc of snake.cells) {
@@ -128,6 +133,7 @@ function loop() {
         context.fill();
     }
 
+    // отрисовка головы
     context.fillStyle = "#000000";
     context.beginPath();
     context.arc(
@@ -140,18 +146,28 @@ function loop() {
     context.stroke();
     context.fill();
 
+    // отрисовка яблока
     if (apple) {
         context.fillStyle = "#c33";
         context.beginPath();
-        context.arc(
-            (apple.x + 0.5) * canvas.width / mapWidth,
-            (apple.y + 0.5) * canvas.height / mapHeight,
-            Math.min(canvas.width / mapWidth, canvas.height / mapHeight) / 3,
-            0,
-            Math.PI * 2
-        );
+        // context.arc(
+        //     (apple.x + 0.5) * canvas.width / mapWidth,
+        //     (apple.y + 0.5) * canvas.height / mapHeight,
+        //     Math.min(canvas.width / mapWidth, canvas.height / mapHeight) / 3,
+        //     0,
+        //     Math.PI * 2
+        // );
+        context.drawImage(
+            images.apple,
+            (apple.x) * canvas.width / mapWidth,
+            (apple.y) * canvas.height / mapHeight,
+            canvas.width / mapWidth,
+            canvas.height / mapHeight
+        )
+
         context.stroke();
         context.fill();
+
     }
 }
 
