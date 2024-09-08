@@ -18,6 +18,17 @@ const snake = {
     deltaY: 0
 };
 
+// firefox image load fix
+await Promise.all(
+    Object.values(images).map(img => new Promise(resolve => {
+        const listner = () => {
+            resolve();
+            img.removeEventListener("load", listner);
+        };
+        img.addEventListener("load", listner);
+    }))
+);
+
 for (let x = 0; x < mapWidth; x++) {
     map.push([]);
     for (let y = 0; y < mapHeight; y++) {
@@ -25,22 +36,23 @@ for (let x = 0; x < mapWidth; x++) {
     }
 }
 
-context.clearRect(0, 0, canvas.width, canvas.height);
-for (let x = 0; x < mapWidth; x++) {
-    for (let y = 0; y < mapHeight; y++) {
-        if (map[x][y]) {
-            context.drawImage(
-                images.wall,
-                x * canvas.width / mapWidth,
-                y * canvas.height / mapHeight,
-                canvas.width / mapWidth,
-                canvas.height / mapHeight
-            );
+function loop() {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    for (let x = 0; x < mapWidth; x++) {
+        for (let y = 0; y < mapHeight; y++) {
+            if (map[x][y]) {
+                context.drawImage(
+                    images.wall,
+                    x * canvas.width / mapWidth,
+                    y * canvas.height / mapHeight,
+                    canvas.width / mapWidth,
+                    canvas.height / mapHeight
+                );
+            }
         }
     }
-}
 
-function loop () {
     context.strokeStyle = "#ffffff";
     context.fillStyle = "#000000";
     context.beginPath();
@@ -57,8 +69,26 @@ function loop () {
 
 addEventListener("keydown", ev => {
     if (ev.code === "KeyW" || ev.code === "ArrowUp") {
-        
+        // snake.y = snake.y - 1;
+        snake.deltaX = 0;
+        snake.deltaY = -1;
     }
+    if (ev.code === "KeyS" || ev.code === "ArrowDown") {
+        // snake.y = snake.y + 1;
+        snake.deltaX = 0;
+        snake.deltaY = 1;
+    }
+    if (ev.code === "KeyA" || ev.code === "ArrowLeft") {
+        // snake.x = snake.x - 1;
+        snake.deltaX = -1;
+        snake.deltaY = 0;
+    }
+    if (ev.code === "KeyD" || ev.code === "ArrowRight") {
+        // snake.x = snake.x + 1;
+        snake.deltaX = 1;
+        snake.deltaY = 0;
+    }
+    loop();
 });
 
 loop();
