@@ -10,13 +10,16 @@ const images = {
     apple: document.getElementById("apple")
 }
 const snake = {
-    x: 1, //Math.floor(mapWidth / 2),
+    x: Math.floor(mapWidth / 2),
     y: Math.floor(mapHeight / 2),
     cells: [],
     maxCells: 4,
-    deltaX: 1,
+    deltaX: 0,
     deltaY: 0
 };
+
+
+
 let apple = null;
 
 // firefox image load fix
@@ -30,14 +33,29 @@ let apple = null;
 //     }))
 // );
 
-for (let x = 0; x < mapWidth; x++) {
-    map.push([]);
-    for (let y = 0; y < mapHeight; y++) {
-        map[x].push((y === 0 || y === mapHeight - 1) || (x === 0 || x === mapWidth - 1));
+function startGame() {
+    const hardcoreMode = confirm("Хотите усложнить игру?");
+    generateMap(hardcoreMode);
+}
+
+startGame();
+
+function generateMap(hardcoreMode) {
+    for (let x = 0; x < mapWidth; x++) {
+        map.push([]);
+        for (let y = 0; y < mapHeight; y++) {
+            if (hardcoreMode) {
+                map[x].push((y === 0 || y === mapHeight - 1) || (x === 0 || x === mapWidth - 1) || (Math.random() < 0.2));
+            }
+            else {
+                map[x].push((y === 0 || y === mapHeight - 1) || (x === 0 || x === mapWidth - 1));
+            }
+
+        }
     }
 }
 
-let gameLoopIntervalId = setInterval(loop, 500);
+let gameLoopIntervalId = setInterval(loop, 200);
 
 function loop() {
     update();
@@ -45,6 +63,9 @@ function loop() {
 }
 
 function update() {
+    if (snake.deltaX === 0 && snake.deltaY === 0) {
+        return;
+    }
     if (snake.maxCells > snake.cells.length) {
         snake.cells.unshift({
             x: snake.x,
@@ -103,7 +124,7 @@ function update() {
 function draw() {
     context.clearRect(0, 0, canvas.width, canvas.height);
 
-    context.fillStyle = "#8fb082";
+    context.fillStyle = "#accea2"; // заливка фона
     context.rect(0, 0, canvas.width, canvas.height);
     context.fill();
 
@@ -123,8 +144,8 @@ function draw() {
     }
 
     // отрисовка сегментов змеи
-    context.strokeStyle = "#5555";
-    context.lineWidth = Math.min(canvas.width / mapWidth, canvas.height / mapHeight) / 3;
+    context.strokeStyle = "#00b702";
+    context.lineWidth = Math.min(canvas.width / mapWidth, canvas.height / mapHeight) / 2;
     context.beginPath();
     context.moveTo(
         (snake.x + 0.5) * canvas.width / mapWidth,
@@ -140,8 +161,8 @@ function draw() {
 
     context.lineWidth = 1;
     // отрисовка сегментов змеи
-    context.fillStyle = "#555";
-    context.strokeStyle = "#ffffff";
+    context.fillStyle = "#05d908";
+    context.strokeStyle = "rgba(0,0,0,0)";
     for (const sc of snake.cells) {
         context.beginPath();
         context.arc(
@@ -156,7 +177,8 @@ function draw() {
     }
 
     // отрисовка головы
-    context.fillStyle = "#000000";
+    context.fillStyle = "#ff0000";
+    context.strokeStyle = "#000000"
     context.beginPath();
     context.arc(
         (snake.x + 0.5) * canvas.width / mapWidth,
@@ -192,22 +214,22 @@ function stopGame(isWin = false) {
 }
 
 addEventListener("keydown", ev => {
-    if (ev.code === "KeyW" || ev.code === "ArrowUp") {
+    if ((ev.code === "KeyW" || ev.code === "ArrowUp") && (snake.deltaY === 0)) {
         // snake.y = snake.y - 1;
         snake.deltaX = 0;
         snake.deltaY = -1;
     }
-    if (ev.code === "KeyS" || ev.code === "ArrowDown") {
+    if ((ev.code === "KeyS" || ev.code === "ArrowDown") && (snake.deltaY === 0)) {
         // snake.y = snake.y + 1;
         snake.deltaX = 0;
         snake.deltaY = 1;
     }
-    if (ev.code === "KeyA" || ev.code === "ArrowLeft") {
+    if ((ev.code === "KeyA" || ev.code === "ArrowLeft") && (snake.deltaX === 0)) {
         // snake.x = snake.x - 1;
         snake.deltaX = -1;
         snake.deltaY = 0;
     }
-    if (ev.code === "KeyD" || ev.code === "ArrowRight") {
+    if ((ev.code === "KeyD" || ev.code === "ArrowRight") && (snake.deltaX === 0)) {
         // snake.x = snake.x + 1;
         snake.deltaX = 1;
         snake.deltaY = 0;
