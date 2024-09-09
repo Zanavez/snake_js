@@ -40,6 +40,11 @@ for (let x = 0; x < mapWidth; x++) {
 let gameLoopIntervalId = setInterval(loop, 500);
 
 function loop() {
+    update();
+    draw();
+}
+
+function update() {
     if (snake.maxCells > snake.cells.length) {
         snake.cells.unshift({
             x: snake.x,
@@ -93,14 +98,14 @@ function loop() {
     if (map[snake.x][snake.y]) {
         stopGame(false);
     }
-// отрисовка
+}
 
+function draw() {
     context.clearRect(0, 0, canvas.width, canvas.height);
 
     context.fillStyle = "#8fb082";
     context.rect(0, 0, canvas.width, canvas.height);
     context.fill();
-
 
     // отрисовка стен
     for (let x = 0; x < mapWidth; x++) {
@@ -117,6 +122,23 @@ function loop() {
         }
     }
 
+    // отрисовка сегментов змеи
+    context.strokeStyle = "#5555";
+    context.lineWidth = Math.min(canvas.width / mapWidth, canvas.height / mapHeight) / 3;
+    context.beginPath();
+    context.moveTo(
+        (snake.x + 0.5) * canvas.width / mapWidth,
+        (snake.y + 0.5) * canvas.height / mapHeight,
+    );
+    for (let i = 0; i < snake.cells.length; i++) {
+        context.lineTo(
+            (snake.cells[i].x + 0.5) * canvas.width / mapWidth,
+            (snake.cells[i].y + 0.5) * canvas.height / mapHeight
+        );
+    }
+    context.stroke();
+
+    context.lineWidth = 1;
     // отрисовка сегментов змеи
     context.fillStyle = "#555";
     context.strokeStyle = "#ffffff";
@@ -150,13 +172,7 @@ function loop() {
     if (apple) {
         context.fillStyle = "#c33";
         context.beginPath();
-        // context.arc(
-        //     (apple.x + 0.5) * canvas.width / mapWidth,
-        //     (apple.y + 0.5) * canvas.height / mapHeight,
-        //     Math.min(canvas.width / mapWidth, canvas.height / mapHeight) / 3,
-        //     0,
-        //     Math.PI * 2
-        // );
+
         context.drawImage(
             images.apple,
             (apple.x) * canvas.width / mapWidth,
@@ -167,7 +183,6 @@ function loop() {
 
         context.stroke();
         context.fill();
-
     }
 }
 
@@ -204,4 +219,3 @@ addEventListener("keydown", ev => {
 });
 
 loop();
-
