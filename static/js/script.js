@@ -1,8 +1,8 @@
 "use strict";
 
 const map = [];
-const mapWidth = 16;
-const mapHeight = 12;
+const mapWidth = 26;
+const mapHeight = 20;
 const canvas = document.getElementById("canvas");
 const context = canvas.getContext("2d");
 const images = {
@@ -55,11 +55,13 @@ function generateMap(hardcoreMode) {
     }
 }
 
-let gameLoopIntervalId = setInterval(loop, 200);
+// let gameLoopIntervalId = setInterval(loop, 200);
+let gameLoopIntervalId = setInterval(loop, 500);
 
 function loop() {
     update();
     draw();
+    // gameLoopIntervalId = setTimeout(loop, 500);
 }
 
 function update() {
@@ -114,6 +116,22 @@ function update() {
 
     if (snake.cells.some(c => c.x === snake.x && c.y === snake.y)) {
         stopGame(false);
+    }
+
+    if (snake.x <= 0) {
+        snake.x = mapWidth - 2;
+    }
+
+    if (snake.x >= mapWidth - 1) {
+        snake.x = 1;
+    }
+
+    if (snake.y <= 0) {
+        snake.y = mapHeight - 2;
+    }
+
+    if (snake.y >= mapHeight - 1) {
+        snake.y = 1;
     }
 
     if (map[snake.x][snake.y]) {
